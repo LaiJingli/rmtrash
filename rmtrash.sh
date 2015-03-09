@@ -65,11 +65,15 @@ rm_mv () {
 		file_dir=$(cd `dirname $file`;pwd)
 		file_fullpath=$file_dir/$file_name
 		###判断要删除的文件或者目录大小是否超过2G
-		###mv成功记录log,记录删除时的文件、目录的路径等信息到log，以便恢复数据
-		mv $file_fullpath $trash_dir && \
-		echo $now deleted by `whoami` from: $file_fullpath >> $trash_log && \
-		echo -e "\033[31m\033[05m $file is deleted from $file_fullpath\033[0m" 
-		#cat $trash_log
+		if [[ "$file_fullpath" == "/*"]];then
+			action deny!
+		else
+			###mv成功记录log,记录删除时的文件、目录的路径等信息到log，以便恢复数据
+			mv $file_fullpath $trash_dir && \
+			echo $now deleted by `whoami` from: $file_fullpath >> $trash_log && \
+			echo -e "\033[31m\033[05m $file is deleted from $file_fullpath\033[0m" 
+			#cat $trash_log
+		fi
 	###done
 }
 
