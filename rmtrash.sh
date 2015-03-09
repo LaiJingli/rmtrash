@@ -65,7 +65,7 @@ rm_mv () {
 		file_dir=$(cd `dirname $file`;pwd)
 		file_fullpath=$file_dir/$file_name
 		###判断要删除的文件或者目录大小是否超过2G
-		if [[ "$file_fullpath" == "/*"]];then
+		if [[ "$file_fullpath" == "/*" ]];then
 			action deny!
 		else
 			###mv成功记录log,记录删除时的文件、目录的路径等信息到log，以便恢复数据
