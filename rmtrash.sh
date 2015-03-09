@@ -1,8 +1,15 @@
 #!/bin/bash
-###rmtrash,rm command line recycle bin
+###rmtrash,rm command line recycle bin for linux and mac osx.
+### laijingli2006@gmail.com
+
+###trash目录define
 realrm="/bin/rm"
 trash_dir=~/.rmtrash/
 trash_log=~/.rmtrash.log
+###判断trash目录是否存在，不存在则创建
+if [ ! -d $trash_dir ] ;then
+	mkdir -v $trash_dir
+fi
 
 ###动态修改用户shell中的alias配置
 os_type=`uname`
@@ -49,12 +56,7 @@ EOF
 ###rm mv function
 rm_mv () {
 	echo ----------------------------
-	##判断trash目录是否存在，不存在则创建
 	now=`date +%Y%m%d_%H:%M:%S`
-	if [ ! -d $trash_dir ] ;then 
-		mkdir -v $trash_dir
-       	fi
-
 	###将用户输入的文件循环mv到trash中
 	###for file in $file_list ;do
 		#echo $file
