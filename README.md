@@ -2,14 +2,14 @@ rmtrash 是linux和mac下命令行版本rm的回收站，安装后对用户透�
 rmtrash stands for "rm trash" which acts just like the system built-in rm command,and just moves the file to the trash for recovery when needed.
 
 
-1、使用说明＜/br＞
+1、使用说明  
 （1）安装  
 wget --no-check-certificate https://raw.githubusercontent.com/LaiJingli/rmtrash/master/rmtrash.sh  
 mv rmtrash.sh /bin/  
 chmod +x /bin/rmtrash.sh  
 /bin/rmtrash.sh  
 
-（2）使用＜/br＞
+（2）使用  
 rm -h  
 
 如果有问题，执行以下2条命令排查即可  
