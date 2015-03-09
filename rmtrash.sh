@@ -3,19 +3,33 @@
 realrm="/bin/rm"
 trash_dir=~/.rmtrash/
 trash_log=~/.rmtrash.log
-file_list=$@
 
-###修改用户shell中的alias
-echo "current shell is: "$SHELL
-cat /Users/laijingli/.zshrc|grep ^"alias rm"
-retrurn=$?
-if [[ $return -ne 0 ]] ;then
+###动态修改用户shell中的alias配置
+os_type=`uname`
+shell_path=$SHELL
+shell_type=`echo $SHELL|awk -F/ '{print $NF}'`
+alias_file=~/.${shell_type}rc
+alias_rm=`cat $alias_file|grep ^"alias rm="`
+return_value=$?
+#echo return_value: $return_value
+#echo alias_rm: $alias_rm
+###如果不存在rm alias，则生成
+if [[ $return_value -ne 0 ]] ;then
 	echo first time to rum rmtrash
-
+	echo "alias rm=/bin/rmtrash.sh" >>$alias_file && source $alias_file
+###如果存在rm alias，且不是指向rmtrash的，则注释掉，区分linux 和mac
+elif [[ "$alias_rm" != "alias rm=/bin/rmtrash.sh" ]];then
+	echo already has alias rm,and must commit out
+	if [[ $os_type == Darwin ]];then
+		sed -i .bak 's/^alias\ rm=/#alias\ rm=/g' $alias_file && \
+		echo "alias rm=/bin/rmtrash.sh" >>$alias_file && \
+		source $alias_file
+	elif [[ $os_type == Linux ]];then
+		sed -i.bak 's/^alias\ rm=/#alias\ rm=/g' $alias_file && \
+		echo "alias rm=/bin/rmtrash.sh" >>$alias_file && \
+		source $alias_file
+	fi
 fi
-
-#alias rm=rmtrash
-
 
 ####function define
 ###usage function
@@ -34,6 +48,7 @@ EOF
 
 ###rm mv function
 rm_mv () {
+	echo ----------------------------
 	##判断trash目录是否存在，不存在则创建
 	now=`date +%Y%m%d_%H:%M:%S`
 	if [ ! -d $trash_dir ] ;then 
@@ -41,7 +56,7 @@ rm_mv () {
        	fi
 
 	###将用户输入的文件循环mv到trash中
-	for file in $file_list ;do
+	###for file in $file_list ;do
 		#echo $file
 		###提取用户输入参数的文件名、目录名，拼出绝对路径
 		file_name=`basename $file`	
@@ -53,7 +68,7 @@ rm_mv () {
 		echo $now deleted by `whoami` from: $file_fullpath >> $trash_log && \
 		echo -e "\033[31m\033[05m $file is deleted from $file_fullpath\033[0m" 
 		#cat $trash_log
-	done
+	###done
 }
 
 ###rm list function
@@ -72,12 +87,15 @@ rm_restore () {
 	for file in $reply ;do
 		originalpath=`cat $trash_log|awk  '{print $6}'|grep /$file$`
 		mv $trash_dir$file  $originalpath && \
-		sed -i .bak "/\/$file$/d" $trash_log && \
+		###linux和mac下sed的用法有细微差别，故需通过操作系统类型进行选择对应的sed格式
+		if [[ $os_type == Darwin ]];then 
+			sed -i .bak "/\/$file$/d" $trash_log
+			echo os_type=Darwin
+		elif [[ $os_type == Linux ]];then
+			sed -i.bak "/\/$file$/d" $trash_log
+			echo os_type=Linux
+		fi && \
 		echo -e  "\033[32m\033[05m$file restore ok to originalpath=$originalpath\033[0m"
-
-		#echo ----------------
-		#cat $trash_log
-		#echo ---------------
 	done
 }
 
@@ -93,7 +111,9 @@ rm_infolog () {
 rm_empty () {
 	echo ----------------------------
 	echo empty trash:
-	/bin/rm -fr $trash_dir/* && echo >$trash_log && echo -e "\033[31m\033[05m The trash bin has been emptyed\033[0m"
+	/bin/rm -fr $trash_dir/* && \
+	echo >$trash_log && \
+	echo -e "\033[31m\033[05m The trash bin has been emptyed\033[0m"
 }
 
 
@@ -111,12 +131,16 @@ case "$option" in
 		i) rm_infolog;;
 		h) rm_usage;;
 		e) rm_empty;;
-		\?)rm_usage;;
+		\?)rm_usage
+		   exit 1;;
 	esac
 done
 shift $((OPTIND-1))
 
+###将文件名的参数依次传递给rm_mv函数
 while [ $# -ne 0 ];do
+	file=$1
+	#echo file=$file 
 	rm_mv
 	shift
 done
