@@ -57,6 +57,7 @@ EOF
 rm_mv () {
 	echo ----------------------------
 	now=`date +%Y%m%d_%H:%M:%S`
+	dupfix=.`date +%Y%m%d%H%M%S`
 	###将用户输入的文件循环mv到trash中
 	###for file in $file_list ;do
 		#echo $file
@@ -69,9 +70,18 @@ rm_mv () {
 		#if [[ "$file_fullpath" == "/*" ]];then
 		#	echo action deny!
 		#else
+		####判断即将删除的文件在trash目录里是否已存在
+		if [[ `ls $trash_dir|grep ^${file_name}$` ]];then	
+			##已存在，文件名重复，需要rename，想原始名的基础上加后缀
+			trash_dest_path=$trash_dir$file_name$dupfix
+			echo trash目录里是否已存在$file_name,需要rename $file_name$dupfix
+		else
+			##不重名，直接按原始文件名保存
+			trash_dest_path=$trash_dir$file_name
+		fi
 			###mv成功记录log,记录删除时的文件、目录的路径等信息到log，以便恢复数据
-			mv $file_fullpath $trash_dir && \
-			echo $now deleted by `whoami` from: $file_fullpath >> $trash_log && \
+			mv $file_fullpath $trash_dest_path && \
+			echo $now `whoami` moved from $file_fullpath to $trash_dest_path >> $trash_log && \
 			echo -e "\033[31m\033[05m $file is deleted from $file_fullpath\033[0m" 
 			#cat $trash_log
 		#fi
@@ -92,7 +102,20 @@ rm_restore () {
 	echo -en "请选择要恢复的文件名(多个文件中间空格分隔,取消ctl+c):"
 	read reply
 	for file in $reply ;do
-		originalpath=`cat $trash_log|awk  '{print $6}'|grep /$file$`
+		###判断原始位置的是否有同名文件存在
+		originalpath=`cat $trash_log|grep /$file$|awk  '{print $5}'`
+		if [[ `ls $originalpath` ]];then
+			echo -en "originalpath:$originalpath already exists. continue overwrite or not(y/n):"
+			read ack
+			if   [[ $ack == y ]];then
+				echo restore:
+			elif [[ $ack == n ]];then
+				echo bye && exit
+			else
+				echo 输入非法 && exit
+			fi
+		fi
+		###
 		mv $trash_dir$file  $originalpath && \
 		###linux和mac下sed的用法有细微差别，故需通过操作系统类型进行选择对应的sed格式
 		if [[ $os_type == Darwin ]];then 
