@@ -141,7 +141,15 @@ rm_infolog () {
 ###rm empty trash function
 rm_empty () {
 	echo ----------------------------
-	echo empty trash:
+	echo -en "empty trash,all backups in trash will be deleted, continue or not(y/n):"
+	read ack
+	if   [[ $ack == y ]];then
+		echo begin to empty trash:
+	elif [[ $ack == n ]];then
+		echo bye && exit
+	else
+		echo 输入非法 && exit
+	fi
 	/bin/rm -fr ${trash_dir}* && \
 	echo >$trash_log && \
 	echo -e "\033[31m\033[05m The trash bin has been emptyed\033[0m"
