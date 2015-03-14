@@ -11,6 +11,14 @@ chmod +x /bin/rmtrash.sh
 
 （2）使用  
 rm -h  
+Usage: rmtrash.sh file1 [file2 file3....] delete the file,and mv them to the rmtrash recycle bin  
+options:  
+	-r  restore selected files to the originalpath from rmtrash recycle bin  
+	-l  list the contens of rmtrash recycle bin  
+	-i  show detailed log of the deleted file history  
+	-d  delete one or more files by user's input file name from the trash  
+	-e  empty the rmtrash recycle bin  
+	-h  display this help menu  
 
 如果有问题，执行以下2条命令排查即可  
 source ~/.bashrc  
