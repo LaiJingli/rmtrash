@@ -7,7 +7,12 @@ rmtrash stands for "rm trash" which acts just like the system built-in rm comman
 wget --no-check-certificate https://raw.githubusercontent.com/LaiJingli/rmtrash/master/rmtrash.sh  
 mv rmtrash.sh /bin/  
 chmod +x /bin/rmtrash.sh  
+
+a、如果仅对单个用户启用回收站，只需第一次执行如下命令即可：  
 /bin/rmtrash.sh  
+
+b、如果想对全局所有用户启用回收站，需要修改bashrc全局配置文件后即可：  
+echo "alias rm=/bin/rmtrash.sh" >>/etc/bashrc  
 
 （2）使用  
 rm -h  
@@ -20,7 +25,7 @@ options:
 	-e  empty the rmtrash recycle bin  
 	-h  display this help menu  
 
-如果有问题，执行以下2条命令排查即可  
+如果有问题，执行以下2条命令排查,或者退出重新登录系统    
 source ~/.bashrc  
 alias |grep rm  
 
