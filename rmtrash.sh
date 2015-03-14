@@ -47,6 +47,7 @@ options:
 	-r  restore selected files to the originalpath from rmtrash recycle bin
 	-l  list the contens of rmtrash recycle bin
 	-i  show detailed log of the deleted file history
+	-d  delete one or more files by user's input file name from the trash
 	-e  empty the rmtrash recycle bin
 	-h  display this help menu
 EOF
@@ -141,9 +142,33 @@ rm_infolog () {
 rm_empty () {
 	echo ----------------------------
 	echo empty trash:
-	/bin/rm -fr $trash_dir/* && \
+	/bin/rm -fr ${trash_dir}* && \
 	echo >$trash_log && \
 	echo -e "\033[31m\033[05m The trash bin has been emptyed\033[0m"
+}
+
+###rm delete function
+rm_delete () {
+	echo ----------------------------
+	echo -en "请选择trash中要删除的文件名(多个文件中间空格分隔,取消ctl+c):"
+	read reply
+		for file in $reply ;do
+			###if file exist then delete it from trash
+			if [[ `ls ${trash_dir}$file` ]];then
+				/bin/rm -fr ${trash_dir}$file && \
+				###linux和mac下sed的用法有细微差别，故需通过操作系统类型进行选择对应的sed格式
+				if [[ $os_type == Darwin ]];then
+					sed -i .bak "/\/$file$/d" $trash_log
+					echo os_type=Darwin
+				elif [[ $os_type == Linux ]];then
+					sed -i.bak "/\/$file$/d" $trash_log		
+					echo os_type=Linux
+				fi && \
+					echo -e  "\033[32m\033[05m$file  is deleted from trash ${trash_dir}$file \033[0m"
+			else
+				echo $file is not exist in $trash_dir
+			fi
+		done
 }
 
 
@@ -153,7 +178,7 @@ rm_empty () {
 ###参数个数为0，输出help
 if [ $# -eq 0 ] ;then rm_usage ;fi
 ###根据用户输入选项执行相应动作
-while getopts lrieh option ;do
+while getopts lriedh option ;do
 case "$option" in
 		l) rm_list;;
 		r) rm_list
@@ -161,6 +186,8 @@ case "$option" in
 		i) rm_infolog;;
 		h) rm_usage;;
 		e) rm_empty;;
+		d) rm_list
+		   rm_delete;;
 		\?)rm_usage
 		   exit 1;;
 	esac
