@@ -22,7 +22,7 @@ return_value=$?
 #echo alias_rm: $alias_rm
 ###如果不存在rm alias，则生成
 if [[ $return_value -ne 0 ]] ;then
-	echo first time to rum rmtrash
+	echo first time to run rmtrash
 	echo "alias rm=/bin/rmtrash.sh" >>$alias_file && source $alias_file
 ###如果存在rm alias，且不是指向rmtrash的，则注释掉，区分linux 和mac
 elif [[ "$alias_rm" != "alias rm=/bin/rmtrash.sh" ]];then
