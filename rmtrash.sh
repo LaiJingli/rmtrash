@@ -42,7 +42,9 @@ fi
 ###usage function
 rm_usage () {
 	cat <<EOF
-Usage: `basename $0` file1 [file2 file3....] delete the file,and mv them to the rmtrash recycle bin
+Usage1: `basename $0` file1 [file2] [dir3] [....] delete the files or dirs,and mv them to the rmtrash recycle bin
+Usage2: rm         file1 [file2] [dir3] [....] delete the files or dirs,and mv them to the rmtrash recycle bin
+        rm is alias to `basename $0`.
 options:
 	-r  restore selected files to the originalpath from rmtrash recycle bin
 	-l  list the contens of rmtrash recycle bin
