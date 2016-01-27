@@ -46,6 +46,10 @@ Usage1: `basename $0` file1 [file2] [dir3] [....] delete the files or dirs,and m
 Usage2: rm         file1 [file2] [dir3] [....] delete the files or dirs,and mv them to the rmtrash recycle bin
         rm is alias to `basename $0`.
 options:
+	-f  mv one or more files to the rmtrash recycle bin
+	-r  mv one or more files to the rmtrash recycle bin
+	-fr mv one or more files to the rmtrash recycle bin
+	-rf mv one or more files to the rmtrash recycle bin
 	-R  Restore selected files to the originalpath from rmtrash recycle bin
 	-l  list the contens of rmtrash recycle bin
 	-i  show detailed log of the deleted file history
@@ -188,7 +192,8 @@ rm_delete () {
 ###参数个数为0，输出help
 if [ $# -eq 0 ] ;then rm_usage ;fi
 ###根据用户输入选项执行相应动作
-while getopts lRiedh option ;do
+###通过非显示的方式(加入fr选项，但在case里不做匹配操作，遇到含-fr/-rf/-f/-r时直接删除)支持很多用户的使用习惯rm -fr file,rm -rf file
+while getopts lRiedhfr option ;do
 case "$option" in
 		l) rm_list;;
 		R) rm_list
