@@ -1,6 +1,10 @@
 #!/bin/bash
-###rmtrash,rm command line recycle bin for linux and mac osx.
+### rmtrash,rm command line recycle bin for linux and mac osx.
+### rmtrash 是linux和mac下命令行版本rm的回收站，安装后对用户透明，符合正常使用rm的习惯(支持rm -fr file哦)，有了他再也不怕rm时候手颤抖了。
+### rmtrash stands for "rm trash" which acts just like the system built-in rm command,and just moves the file to the trash for recovery when needed.
+### https://github.com/LaiJingli/rmtrash
 ### laijingli2006@gmail.com
+### 2015-3-9
 
 ###trash目录define
 realrm="/bin/rm"
