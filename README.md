@@ -1,4 +1,4 @@
-rmtrash 是linux和mac下命令行版本rm的回收站，安装后对用户透明，符合正常使用rm的习惯(支持rm -fr file哦)，有了他再也不怕rm时候手颤抖了。  
+rmtrash 是linux和mac下命令行版本rm的回收站，安装后对用户透明，符合正常使用rm的习惯(支持rm -fr file哦)，有了他再也不怕rm时候手颤抖了(能自动拒绝 rm -fr / 哦)。  
 rmtrash stands for "rm trash" which acts just like the system built-in rm command,and just moves the file to the trash for recovery when needed.
 
 
