@@ -90,11 +90,18 @@ rm_mv () {
 			##不重名，直接按原始文件名保存
 			trash_dest_path=$trash_dir$file_name
 		fi
+
+		####判断如果是要删除根目录，则直接提示并拒绝
+		if [ "$file_fullpath" = "/" ];then
+			echo rm拒绝执行删除根目录，否则系统就挂了，请检查...
+		else
 			###mv成功记录log,记录删除时的文件、目录的路径等信息到log，以便恢复数据
 			mv $file_fullpath $trash_dest_path && \
-			echo $now `whoami` moved from $file_fullpath to $trash_dest_path >> $trash_log && \
+			echo $now `date +%s` `whoami` moved from $file_fullpath to $trash_dest_path >> $trash_log && \
 			echo -e "\033[31m\033[05m $file is deleted from $file_fullpath\033[0m" 
 			#cat $trash_log
+		fi
+
 		#fi
 	###done
 }
@@ -189,6 +196,18 @@ rm_delete () {
 		done
 }
 
+###清空回收站中30天之前执行rm删除过的文件
+rm_delete_by_30_days () {
+	rm_mv_30_days_ago_timestamp=$1
+	###30*24*3600=2592000
+	#30_days_by_seconds=2592000
+	#cat $trash_log|awk 'BEGIN{30_days_by_seconds=2592000}{if()}'
+	awk   'END{
+		print 时间差:$2-2592000
+		{if ($2-2592000>100) print dayu}
+	}
+	' $trash_log
+}
 
 ###跨分区的问题
 
@@ -197,7 +216,7 @@ rm_delete () {
 if [ $# -eq 0 ] ;then rm_usage ;fi
 ###根据用户输入选项执行相应动作
 ###通过非显示的方式(加入fr选项，但在case里不做匹配操作，遇到含-fr/-rf/-f/-r时直接删除)支持很多用户的使用习惯rm -fr file,rm -rf file
-while getopts lRiedhfr option ;do
+while getopts lRiecdhfr option ;do
 case "$option" in
 		l) rm_list;;
 		R) rm_list
@@ -205,6 +224,7 @@ case "$option" in
 		i) rm_infolog;;
 		h) rm_usage;;
 		e) rm_empty;;
+		c) rm_delete_by_30_days;;
 		d) rm_list
 		   rm_delete;;
 		\?)rm_usage
